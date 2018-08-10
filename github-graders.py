@@ -135,21 +135,24 @@ while True:
 filtered_repo_list = [x for x in all_repos_list if desired_user(x['name'])]
 sys.stderr.write("%d of %d repos with %s are ready to grade\n" %
                  (len(filtered_repo_list), len(all_repos_list), github_prefix))
-
-# clone_url_list = ['https://github.com/%s.git' % repo['full_name'] for repo in filtered_repo_list]
+sys.stderr.flush()
 
 # note: we're shuffling the graders, so different graders get lucky each week when the load isn't evenly divisible
+# and, of course, we're shuffling the repos.
 random.seed()
+random.shuffle(filtered_repo_list)
 random.shuffle(grader_list)
 
 # inefficient, but correct
-tmp = group_list_by_n(filtered_repo_list, len(grader_list))
-grading_groups = [[entry[i] for entry in tmp if i < len(entry)] for i in range(len(grader_list))]
+grading_groups = [[entry[i] for entry
+                   in group_list_by_n(filtered_repo_list, len(grader_list))
+                   if i < len(entry)]
+                  for i in range(len(grader_list))]
 
 grader_map = dict(zip(grader_list, grading_groups))
 
 print("# Grade assignments for %s" % github_prefix)
-for grader in sorted(grader_map.keys()):
+for grader in sorted(grader_map.keys(), key=str.lower):
     print("## %s (%d total)" % (grader, len(grader_map[grader])))
-    for repo in grader_map[grader]:
-        print("- [%s](%s)" % (student_name_from(repo['name']), 'https://github.com/%s.git' % repo['full_name']))
+    for repo in sorted(grader_map[grader], key=lambda x: str.lower(x['name'])):
+        print("- [%s](%s)" % (student_name_from(repo['name']), 'https://github.com/%s' % repo['full_name']))
