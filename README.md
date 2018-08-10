@@ -38,3 +38,6 @@ the graders to edit it to mark the students as "done" when they're
 done with their grading session. (This helps us see what graders
 haven't finished their work and, if necessary, assign other graders to pick up
 the slack.)
+
+Note: the output is in Markdown format, which Piazza has recently added. Select the
+Markdown block before cutting-and-pasting.

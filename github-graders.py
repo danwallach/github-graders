@@ -65,21 +65,30 @@ def group_list_by_n(l: List[T], n: int) -> List[List[T]]:
         return [l[0:n]] + group_list_by_n(l[n:], n)
 
 
+def student_name_from(repo_name: str) -> str:
+    """
+    Given a GitHub repo "name" (e.g., "comp215-week01-intro-2017-danwallach") return the username suffix at the
+    end ("danwallach"). If it's not there, the result is an empty string ("").
+    """
+    m = re.search(github_prefix + "-(.*)$", repo_name)
+    if not m:
+        return ""  # something funny in the name, so therefore not matching
+    else:
+        return m.group(1)
+
+
 def desired_user(name: str) -> bool:
     """
-    Given a GitHub project "name" (e.g., "comp215-week01-intro-2017-danwallach"), returns true or false if that
+    Given a GitHub repo "name" (e.g., "comp215-week01-intro-2017-danwallach"), returns true or false if that
     project is something we're trying to grade now, based on the specified prefix as well as the list of graders
     (to be ignored) and the ignore-list.
     """
-    m = re.search("-([^-]+)$", name)
-    if not m:
-        return False  # something funny in the name, so therefore not matching
-    else:
-        match = m.group(1)  # from the above, should extract "danwallach"
-        return name.startswith(github_prefix) \
-               and name != github_prefix \
-               and match not in grader_list \
-               and match not in ignore_list
+    m = student_name_from(name)
+    return m != "" \
+           and name.startswith(github_prefix) \
+           and name != github_prefix \
+           and m not in grader_list \
+           and m not in ignore_list
 
 
 request_headers = {
@@ -127,19 +136,20 @@ filtered_repo_list = [x for x in all_repos_list if desired_user(x['name'])]
 sys.stderr.write("%d of %d repos with %s are ready to grade\n" %
                  (len(filtered_repo_list), len(all_repos_list), github_prefix))
 
-clone_url_list = ['https://github.com/%s.git' % repo['full_name'] for repo in filtered_repo_list]
+# clone_url_list = ['https://github.com/%s.git' % repo['full_name'] for repo in filtered_repo_list]
 
-# note: we're shuffling the graders, so different graders get lucky each with fewer projects to grade when
-# the load isn't evenly divisible
+# note: we're shuffling the graders, so different graders get lucky each week when the load isn't evenly divisible
+random.seed()
 random.shuffle(grader_list)
 
 # inefficient, but correct
-tmp = group_list_by_n(clone_url_list, len(grader_list))
+tmp = group_list_by_n(filtered_repo_list, len(grader_list))
 grading_groups = [[entry[i] for entry in tmp if i < len(entry)] for i in range(len(grader_list))]
 
 grader_map = dict(zip(grader_list, grading_groups))
 
+print("# Grade assignments for %s" % github_prefix)
 for grader in sorted(grader_map.keys()):
-    print("%s (%d total)" % (grader, len(grader_map[grader])))
-    for x in grader_map[grader]:
-        print("    %s" % x)
+    print("## %s (%d total)" % (grader, len(grader_map[grader])))
+    for repo in grader_map[grader]:
+        print("- [%s](%s)" % (student_name_from(repo['name']), 'https://github.com/%s.git' % repo['full_name']))
