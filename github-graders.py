@@ -142,9 +142,8 @@ random.shuffle(filtered_repo_list)
 random.shuffle(grader_list)
 
 # inefficient, but correct
-grading_groups = [[entry[i] for entry
-                   in group_list_by_n(filtered_repo_list, len(grader_list))
-                   if i < len(entry)]
+tmp = group_list_by_n(filtered_repo_list, len(grader_list))
+grading_groups = [[entry[i] for entry in tmp if i < len(entry)]
                   for i in range(len(grader_list))]
 
 grader_map = dict(zip(grader_list, grading_groups))
