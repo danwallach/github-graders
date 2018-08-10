@@ -32,7 +32,7 @@ this on the GitHub website
 Now let's say you want to assign graders for every repo beginning with `comp215-week06`
 and you've already edited in the list of graders, as specified above.
 You can simply run `python3 github-graders.py --prefix comp215-week06`
-and it will print out everything you need. We simply post this on
+and it will print out everything you need. We post this on
 Piazza, with a private post visible only to the graders, and we ask
 the graders to edit it to mark the students as "done" when they're
 done with their grading session. (This helps us see what graders
