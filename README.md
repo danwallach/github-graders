@@ -10,7 +10,7 @@ project hyperlinks.
 
 0) This project requires Python3. You may need to install that first.
 
-1) If you haven't already done this, you'll first need to `pip3 install
+1) If you haven't already done this, you'll need to `pip3 install
 requests` for a necessary library.
 
 2) Get a GitHub token with all the "Repo" privileges. You do
@@ -29,7 +29,8 @@ this on the GitHub website
 
 ## Usage
 
-Now let's say you want to assign graders for every repo beginning with `comp215-week06`.
+Now let's say you want to assign graders for every repo beginning with `comp215-week06`
+and you've already edited in the list of graders, as specified above.
 You can simply run `python3 github-graders.py --prefix comp215-week06`
 and it will print out everything you need. We simply post this on
 Piazza, with a private post visible only to the graders, and we ask
