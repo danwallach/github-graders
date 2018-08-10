@@ -153,4 +153,4 @@ print("%d repos are ready to grade\n" % len(filtered_repo_list))
 for grader in sorted(grader_map.keys(), key=str.lower):
     print("## %s (%d total)" % (grader, len(grader_map[grader])))
     for repo in sorted(grader_map[grader], key=lambda x: str.lower(x['name'])):
-        print("- [%s](%s)" % (student_name_from(repo['name']), 'https://github.com/%s' % repo['full_name']))
+        print("- [%s](%s)" % (student_name_from(repo['name']), 'https://github.com/' + repo['full_name']))
