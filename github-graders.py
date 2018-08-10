@@ -81,7 +81,7 @@ def desired_user(name: str) -> bool:
     """
     Given a GitHub repo "name" (e.g., "comp215-week01-intro-2017-danwallach"), returns true or false if that
     project is something we're trying to grade now, based on the specified prefix as well as the list of graders
-    (to be ignored) and the ignore-list.
+    (to be ignored) and the ignore-list (also to be ignored).
     """
     m = student_name_from(name)
     return m != "" \
@@ -99,8 +99,9 @@ request_headers = {
 all_repos_list = []
 
 page_number = 1
-sys.stderr.write('Getting repo list from Github')
+sys.stderr.write('Getting repo list from GitHub')
 
+# Painful "paging" process to read a list of repos from GitHub.
 while True:
     sys.stderr.write('.')
     sys.stderr.flush()
@@ -110,7 +111,7 @@ while True:
     page_number = page_number + 1
 
     if repos_page.status_code != 200:
-        sys.stderr.write("Failed to load repos from GitHub: %s\n" % repos_page.content)
+        sys.stderr.write("\nFailed to load repos from GitHub: %s\n" % repos_page.content)
         exit(1)
 
     repos_page_json = repos_page.json()
@@ -133,9 +134,6 @@ while True:
 # full_name: the project and repo (e.g., 'RiceComp215/comp215-week01-intro-2017-danwallach')
 
 filtered_repo_list = [x for x in all_repos_list if desired_user(x['name'])]
-sys.stderr.write("%d of %d repos with %s are ready to grade\n" %
-                 (len(filtered_repo_list), len(all_repos_list), github_prefix))
-sys.stderr.flush()
 
 # note: we're shuffling the graders, so different graders get lucky each week when the load isn't evenly divisible
 # and, of course, we're shuffling the repos.
@@ -152,6 +150,7 @@ grading_groups = [[entry[i] for entry
 grader_map = dict(zip(grader_list, grading_groups))
 
 print("# Grade assignments for %s" % github_prefix)
+print("%d repos are ready to grade\n" % len(filtered_repo_list))
 for grader in sorted(grader_map.keys(), key=str.lower):
     print("## %s (%d total)" % (grader, len(grader_map[grader])))
     for repo in sorted(grader_map[grader], key=lambda x: str.lower(x['name'])):
